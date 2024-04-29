@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="dataid">
+
+    </div>
+    <canvas id="myChart"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+    import { getDatabase , get , ref } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyB9zuVPZb85TVl5-LtsMtjjPleP6pF6rug",
+      authDomain: "fir-app-b46e3.firebaseapp.com",
+      projectId: "fir-app-b46e3",
+      storageBucket: "fir-app-b46e3.appspot.com",
+      messagingSenderId: "197150355317",
+      appId: "1:197150355317:web:406fb657d1aa685f382d3c"
+    };
+  
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let dict = {};
+    
+    // console.log("Good");
+    
+    function readData()
+    {
+        let arr = [] ;
+        const userRef = ref(db,'users')
+        // const dbref = ref(db)
+        
+        
+        get(userRef).then((snapshot)=>{
+            snapshot.forEach((childsnapshot)=>{
+                childsnapshot.forEach((grandchildsnapshot)=>{
+                    dict['data'] = grandchildsnapshot.val().hour;
+                    arr.push(dict['data']);
+                })
+            })            
+            
+            const ctx = document.getElementById('myChart');
+            
+            
+            const myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['0h', '2h', '4h', '6h', '8h', '10h', '12h', '14h', '16h', '18h', '20h', '22h'],
+                    datasets: [{
+                        label: '# of Votes',
+                        data: [5,10,7,15,20,30,45,10,17,19,33,20],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        const updated = arr;
+        console.log(arr);
+        myChart.data.datasets[0].data = updated;
+        myChart.update();
+        console.log(myChart.config.data.datasets); 
+
+        })
+    }
+    readData();
+
+
+    </script>
+</body>
+</html>
